@@ -102,12 +102,27 @@ void ExceptionHandler(ExceptionType which)
 
 			return move_program_counter();
 		
+		case SC_ReadNum:
+            DEBUG(dbgSys, "Read number\n");
+
+            int res;
+            res = SysReadNum();
+
+            DEBUG(dbgSys, "SysReadNum returning with " << res << "\n");
+            /* Prepare Result */
+            kernel->machine->WriteRegister(2, (int)res);
+
+            return move_program_counter();
+
 		case SC_PrintNum:
             DEBUG(dbgSys, "PrintNum " << kernel->machine->ReadRegister(4) << "\n");
             SysPrintNum((int)kernel->machine->ReadRegister(4));
 
             return move_program_counter();
 		
+		/*
+		return move_program_counter() in the end of each case
+		*/
 
 		default:
 			cerr << "Unexpected system call " << type << "\n";

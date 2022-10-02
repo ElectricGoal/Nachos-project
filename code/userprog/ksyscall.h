@@ -77,6 +77,49 @@ int SysAdd(int op1, int op2)
   return op1 + op2;
 }
 
+/*  Input:   None
+    Output:  int value
+    Purpose: Read an int number from console */
+int SysReadNum()
+{
+	char c;
+	int res = 0;
+	int sign = 1;
+	bool isValid = true;
+
+	// skip blank space and LF character
+	c = kernel->synchConsoleIn->GetChar();
+	while (c == ' ' || c == '\n')
+		c = kernel->synchConsoleIn->GetChar();
+
+	if (c == '-') // check negative
+	{
+		sign = -1;
+		c = kernel->synchConsoleIn->GetChar();
+	}
+
+	while (c != ' ' && c != '\n')
+	{
+		if (isValid) // if number is valid
+		{
+			if (c >= '0' && c <= '9')
+			{
+				res *= 10;
+				res += sign * (c - '0');
+				if ((sign > 0 && res < 0) || (sign < 0 && res > 0)) // overflow
+					isValid = false;
+			}
+			else
+				isValid = false;
+		}
+		c = kernel->synchConsoleIn->GetChar();
+	}
+
+	if (isValid)
+		return res;
+	return 0;
+}
+
 /*	Input: int value
   Output: None
   Purpose: Print an int number to console */

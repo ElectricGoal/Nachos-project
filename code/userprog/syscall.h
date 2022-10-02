@@ -36,6 +36,7 @@
 #define SC_ThreadJoin   15
 
 #define SC_Add		42
+#define SC_ReadNum     43
 #define SC_PrintNum		44
 
 #ifndef IN_ASM
@@ -59,6 +60,9 @@ void Halt();
  */ 
 
 int Add(int op1, int op2);
+
+// Read a number from console
+int ReadNum();
 
 // Print a number to console
 void PrintNum(int number);
