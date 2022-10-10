@@ -14,10 +14,13 @@
 
 ## Lệnh cần thiết để tạo một system call (ở root của repo)
 ```
+cd NachOS-4.0
 cd code/build.linux
 make depend
 make
-cd ../test
+cd ../../coff2noff
+make
+cd ../code/test
 make
 cd ..
 build.linux/nachos -x test/<file-test>
