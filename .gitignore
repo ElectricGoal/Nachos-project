@@ -8,5 +8,7 @@ code/test/*
 !code/test/input.txt
 !code/test/script
 !code/test/Makefile
+!code/test/Makefile.dep
+!code/test/start.S
 code/DISK_0
 .vscode/
