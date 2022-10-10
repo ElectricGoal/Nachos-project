@@ -1,0 +1,14 @@
+*.o
+*.coff
+NachOS-4.0/code/build.linux/DISK_0
+NachOS-4.0/code/build.linux/nachos
+NachOS-4.0/coff2noff/coff2noff.x86Linux
+NachOS-4.0/code/test/*
+!NachOS-4.0/code/test/*.c
+!NachOS-4.0/code/test/input.txt
+!NachOS-4.0/code/test/script
+!NachOS-4.0/code/test/Makefile
+!NachOS-4.0/code/test/Makefile.dep
+!NachOS-4.0/code/test/start.S
+NachOS-4.0/code/DISK_0
+.vscode/
