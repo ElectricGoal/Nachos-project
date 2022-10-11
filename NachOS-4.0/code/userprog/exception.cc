@@ -56,18 +56,15 @@ void move_program_counter()
 {
 	/* set previous programm counter (debugging only)
 	 * similar to: registers[PrevPCReg] = registers[PCReg];*/
-	kernel->machine->WriteRegister(PrevPCReg,
-								   kernel->machine->ReadRegister(PCReg));
+	kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
 
 	/* set programm counter to next instruction
 	 * similar to: registers[PCReg] = registers[NextPCReg]*/
-	kernel->machine->WriteRegister(PCReg,
-								   kernel->machine->ReadRegister(NextPCReg));
+	kernel->machine->WriteRegister(PCReg, kernel->machine->ReadRegister(NextPCReg));
 
 	/* set next programm counter for brach execution
 	 * similar to: registers[NextPCReg] = pcAfter;*/
-	kernel->machine->WriteRegister(
-		NextPCReg, kernel->machine->ReadRegister(NextPCReg) + 4);
+	kernel->machine->WriteRegister(NextPCReg, kernel->machine->ReadRegister(NextPCReg) + 4);
 }
 
 void ExceptionHandler(ExceptionType which)
