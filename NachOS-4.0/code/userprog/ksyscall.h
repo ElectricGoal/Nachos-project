@@ -172,4 +172,23 @@ void SysPrintNum(int number)
   }
 }
 
+/* Read a character from console */
+char SysReadChar()
+{
+  return kernel->synchConsoleIn->GetChar();
+}
+
+/* Print a character to console */
+void SysPrintChar(char character)
+{
+  kernel->synchConsoleOut->PutChar(character);
+}
+
+/* Random a number */
+int SysRandomNum()
+{
+  RandomInit((int)time(NULL));
+  return RandomNumber();
+}
+
 #endif /* ! __USERPROG_KSYSCALL_H__ */

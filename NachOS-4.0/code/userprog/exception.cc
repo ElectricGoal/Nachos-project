@@ -92,7 +92,7 @@ void ExceptionHandler(ExceptionType which)
 		cerr << "Error " << which << " occurs\n";
 		SysHalt();
 		ASSERTNOTREACHED();
-		
+
 	case SyscallException:
 		switch (type)
 		{
@@ -118,6 +118,10 @@ void ExceptionHandler(ExceptionType which)
 
 			return move_program_counter();
 
+			return;
+			ASSERTNOTREACHED();
+			break;
+
 		case SC_ReadNum:
 			DEBUG(dbgSys, "Read number\n");
 
@@ -130,16 +134,63 @@ void ExceptionHandler(ExceptionType which)
 
 			return move_program_counter();
 
+			return;
+			ASSERTNOTREACHED();
+			break;
+
 		case SC_PrintNum:
 			DEBUG(dbgSys, "PrintNum " << kernel->machine->ReadRegister(4) << "\n");
 			SysPrintNum((int)kernel->machine->ReadRegister(4));
 
 			return move_program_counter();
 
-			/*
-			return move_program_counter() in the end of each case
-			*/
+			return;
+			ASSERTNOTREACHED();
+			break;
 
+		case SC_ReadChar:
+		{
+			DEBUG(dbgSys, "Read character \n");
+
+			char result;
+			result = SysReadChar();
+
+			DEBUG(dbgSys, "ReadChar returning with " << result << "\n");
+			kernel->machine->WriteRegister(2, (int)result);
+
+			return move_program_counter();
+
+			return;
+			ASSERTNOTREACHED();
+			break;
+		}
+		case SC_PrintChar:
+		{
+			DEBUG(dbgSys, "PrintChar returning with " << kernel->machine->ReadRegister(4) << "\n");
+			SysPrintChar(kernel->machine->ReadRegister(4));
+
+			return move_program_counter();
+
+			return;
+			ASSERTNOTREACHED();
+			break;
+		}
+		case SC_RandomNum:
+		{
+			DEBUG(dbgSys, "Random number \n");
+
+			int result;
+			result = SysRandomNum();
+
+			DEBUG(dbgSys, "RandomNumber returning with " << result << "\n");
+			kernel->machine->WriteRegister(2, (int)result);
+
+			return move_program_counter();
+
+			return;
+			ASSERTNOTREACHED();
+			break;
+		}
 		default:
 			cerr << "Unexpected system call " << type << "\n";
 			break;

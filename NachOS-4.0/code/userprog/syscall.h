@@ -36,8 +36,12 @@
 #define SC_ThreadJoin   15
 
 #define SC_Add		42
+
 #define SC_ReadNum     43
 #define SC_PrintNum		44
+#define SC_ReadChar    45
+#define SC_PrintChar    46
+#define SC_RandomNum    47
 
 #ifndef IN_ASM
 
@@ -66,6 +70,15 @@ int ReadNum();
 
 // Print a number to console
 void PrintNum(int number);
+
+/* Read a character from console */
+char ReadChar();
+
+/* Print a character to console */
+void PrintChar(char character);
+
+/* Random a number */
+int RandomNum();
 
 /* Address space control operations: Exit, Exec, Execv, and Join */
 
@@ -114,7 +127,7 @@ typedef int OpenFileId;
  */
 
 #define CONSOLEINPUT	0  
-#define CONSOLEOUTPUT	1   
+#define CONSOLEOUTPUT	1  
  
 /* Create a Nachos file, with name "name" */
 /* Note: Create does not open the file.   */
