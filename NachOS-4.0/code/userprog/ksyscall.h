@@ -15,6 +15,9 @@
 #include "synchconsole.h"
 #include "filesys.h"
 
+#define BUFFER_MAX_LENGTH 255
+#define FILE_MAX_LENGTH 32
+
 /*  Input:  - User space address (int)
             - Limit of buffer (int)
     Output: - Buffer (char*)
@@ -190,5 +193,80 @@ int SysRandomNum()
   RandomInit((int)time(NULL));
   return RandomNumber();
 }
+
+/*  Input:   - address of buffer to store string in user mode (char*)
+			 - max length of string
+    Output:  - None
+    Purpose: Read a string from console and store at provided address */
+int SysReadString(char *virtAddr, int length)
+{
+	if (length < 0) // invalid length
+		return -1;
+
+	char *buffer = new char[length + 1];
+	if (buffer == NULL) // cannot allocate
+		return -1;
+
+	// get char from console and put into buffer
+	int i = -1;
+	while (i < length)
+	{
+		char c = kernel->synchConsoleIn->GetChar();
+		if (c != '\n')
+			buffer[++i] = c;
+		else
+			break;
+	}
+	buffer[i + 1] = 0;							// mark end of string
+	System2User((int)virtAddr, length, buffer); // copy to user memory
+	delete[] buffer;
+	return i + 1;
+}
+
+/*	Input: Address of buffer stores string in user space
+	Output: None
+	Purpose: Print a string to console */
+int SysPrintString(int virtAddr)
+{
+	// copy buffer from user memory space to system memory space
+	char *sysBuffer = User2System(virtAddr, BUFFER_MAX_LENGTH);
+
+	// return if system does not have enough memory
+	if (sysBuffer == NULL)
+		return -1;
+
+	// print each character in buffer to console
+	int index = 0;
+	int count = 0;
+	while (sysBuffer[index] != 0)
+	{
+		kernel->synchConsoleOut->PutChar(sysBuffer[index]);
+		index++;
+		count++;
+
+		// if system buffer is full but the string is not ended
+		if (index == BUFFER_MAX_LENGTH)
+		{
+			// de-allocate system buffer
+			delete[] sysBuffer;
+			sysBuffer = NULL;
+
+			// copy next BUFFER_MAX_LENGTH characters from user memory space to system memory space
+			virtAddr += BUFFER_MAX_LENGTH;
+			sysBuffer = User2System(virtAddr, BUFFER_MAX_LENGTH);
+
+			// return if system does not have enough memory
+			if (sysBuffer == NULL)
+				return count;
+
+			// reset index from 0
+			index = 0;
+		}
+	}
+	// de-allocate system buffer
+	delete[] sysBuffer;
+	return count;
+}
+
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */

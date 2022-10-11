@@ -42,6 +42,8 @@
 #define SC_ReadChar    45
 #define SC_PrintChar    46
 #define SC_RandomNum    47
+#define SC_ReadString  48
+#define SC_PrintString 49
 
 #ifndef IN_ASM
 
@@ -79,6 +81,12 @@ void PrintChar(char character);
 
 /* Random a number */
 int RandomNum();
+
+// Read a string from console
+void ReadString(char buffer[], int length);
+
+// Print a string to console
+void PrintString(char buffer[]);
 
 /* Address space control operations: Exit, Exec, Execv, and Join */
 
