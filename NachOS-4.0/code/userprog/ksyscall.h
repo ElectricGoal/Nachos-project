@@ -13,59 +13,6 @@
 
 #include "kernel.h"
 #include "synchconsole.h"
-#include "filesys.h"
-
-/*  Input:  - User space address (int)
-            - Limit of buffer (int)
-    Output: - Buffer (char*)
-    Purpose: Copy buffer from User memory space to System memory space */
-char *User2System(int virtAddr, int limit)
-{
-  int i; // index
-  int oneChar;
-  char *kernelBuf = new char[limit + 1]; // need for terminal string
-
-  if (kernelBuf == NULL)
-    return kernelBuf;
-
-  memset(kernelBuf, 0, limit + 1);
-
-  for (i = 0; i < limit; i++)
-  {
-    kernel->machine->ReadMem(virtAddr + i, 1, &oneChar);
-    kernelBuf[i] = (char)oneChar;
-    if (oneChar == 0)
-      break;
-  }
-
-  return kernelBuf;
-}
-
-/*  Input:  - User space address (int)
-            - Limit of buffer (int)
-            - Buffer (char[])
-    Output: - Number of bytes copied (int)
-    Purpose: Copy buffer from System memory space to User memory space */
-int System2User(int virtAddr, int len, char *buffer)
-{
-  if (len < 0)
-    return -1;
-
-  if (len == 0)
-    return len;
-
-  int i = 0;
-  int oneChar = 0;
-
-  do
-  {
-    oneChar = (int)buffer[i];
-    kernel->machine->WriteMem(virtAddr + i, 1, oneChar);
-    i++;
-  } while (i < len && oneChar != 0);
-
-  return i;
-}
 
 void SysHalt()
 {
@@ -170,6 +117,25 @@ void SysPrintNum(int number)
       kernel->synchConsoleOut->PutChar(-digits[digitCount - 1 - i] + '0');
     }
   }
+}
+
+/* Read a character from console */
+char SysReadChar()
+{
+  return kernel->synchConsoleIn->GetChar();
+}
+
+/* Print a character to console */
+void SysPrintChar(char character)
+{
+  kernel->synchConsoleOut->PutChar(character);
+}
+
+/* Random a number */
+int SysRandomNum()
+{
+  RandomInit((int)time(NULL));
+  return RandomNumber();
 }
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */
