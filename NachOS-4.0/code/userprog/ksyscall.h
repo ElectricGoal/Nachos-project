@@ -268,5 +268,32 @@ int SysPrintString(int virtAddr)
 	return count;
 }
 
+/*	Input: Address of buffer stores file name in user space
+	Output: 0 if successful, otherwise -1
+	Purpose: Create an empty file */
+int SysCreateFile(int virtAddr)
+{
+	char *name = User2System(virtAddr, FILE_MAX_LENGTH + 1);
+	if (strlen(name) == 0)
+	{
+		DEBUG(dbgSys, "Invalid file name!");
+		return -1;
+	}
+	if (name == NULL)
+	{
+		DEBUG(dbgSys, "Not enough system memory!");
+		delete[] name;
+		return -1;
+	}
+	if (!kernel->fileSystem->Create(name, 0))
+	{
+		DEBUG(dbgSys, "Create file unsuccessfully!");
+		delete[] name;
+		return -1;
+	}
+	DEBUG(dbgSys, "Create file successfully!");
+	delete[] name;
+	return 0;
+}
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */
