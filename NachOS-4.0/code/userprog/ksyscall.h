@@ -285,7 +285,8 @@ int SysCreateFile(int virtAddr)
 		delete[] name;
 		return -1;
 	}
-	if (!kernel->fileSystem->Create(name, 0))
+ 
+	if (!kernel->fileSystem->Create(name))
 	{
 		DEBUG(dbgSys, "Create file unsuccessfully!");
 		delete[] name;
@@ -294,6 +295,39 @@ int SysCreateFile(int virtAddr)
 	DEBUG(dbgSys, "Create file successfully!");
 	delete[] name;
 	return 0;
+}
+
+/*	Input: 	Address of buffer stores file name in user space
+			Type 0 for read and write mode, 1 for read only mode
+	Output: 0 if successful, otherwise -1
+	Purpose: Open a file */
+int SysOpen(int virAddr, int type)
+{
+	if (type != 0 && type != 1){
+		DEBUG(dbgSys, "Invalid type!");
+		return -1;
+	}
+
+	char *name = User2System(virAddr, BUFFER_MAX_LENGTH);
+	if (name == NULL || strlen(name) == 0)
+	{
+		DEBUG(dbgSys, "Invalid file name!");
+		return -1;
+	}
+
+  int id = kernel->fileSystem->Open(name, type);
+  if (id == -1) return -1;
+  DEBUG(dbgSys, "\nOpened file");
+  delete name;
+  return id;
+}
+
+/*	Input: File's ID in file table
+	Output: 0 if successful, otherwise -1
+	Purpose: Close a file */
+int SysClose(int id)
+{
+	return kernel->fileSystem->Close(id); 
 }
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */

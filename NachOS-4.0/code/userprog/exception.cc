@@ -232,6 +232,35 @@ void ExceptionHandler(ExceptionType which)
 
             break;
 
+		case SC_CreateFile:
+            DEBUG(dbgSys, "Create file\n");
+            result = SysCreateFile((int)kernel->machine->ReadRegister(4));
+            
+            DEBUG(dbgSys, "SysCreateFile returning with " << result << "\n");
+            kernel->machine->WriteRegister(2, (int)result);
+
+            return move_program_counter();
+			return;
+            ASSERTNOTREACHED();
+            break;
+
+		case SC_Open:
+		{
+			int virtAddr = kernel->machine->ReadRegister(4);
+			int type = kernel->machine->ReadRegister(5);
+
+            kernel->machine->WriteRegister(2, SysOpen(virtAddr, type));
+
+            return move_program_counter();
+		}
+		case SC_Close:
+		{
+			int id = kernel->machine->ReadRegister(4);
+			kernel->machine->WriteRegister(2, SysClose(id));
+
+			return move_program_counter();
+		}
+
 		default:
 			cerr << "Unexpected system call " << type << "\n";
 			break;
