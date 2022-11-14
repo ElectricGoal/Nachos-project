@@ -32,35 +32,73 @@
 
 #ifndef FS_H
 #define FS_H
+// #define FILESYS_STUB
 
 #include "copyright.h"
 #include "sysdep.h"
 #include "openfile.h"
+#include "filetable.h"
+
+#define MAX_PROCESS 20
 
 #ifdef FILESYS_STUB 		// Temporarily implement file system calls as 
 				// calls to UNIX, until the real file system
 				// implementation is available
 class FileSystem {
-  public:
-    FileSystem() {}
+   public:
+    FileTable **fileTable;
+
+    FileSystem() {
+        fileTable = new FileTable *[MAX_PROCESS];
+        for (int i = 0; i < MAX_PROCESS; i++) {
+            fileTable[i] = new FileTable;
+        }
+    }
+
+    ~FileSystem() {
+        for (int i = 0; i < MAX_PROCESS; i++) {
+            delete fileTable[i];
+        }
+        delete[] fileTable;
+    }
 
     bool Create(char *name) {
-	int fileDescriptor = OpenForWrite(name);
+        int fileDescriptor = OpenForWrite(name);
 
-	if (fileDescriptor == -1) return FALSE;
-	Close(fileDescriptor); 
-	return TRUE; 
-	}
+        if (fileDescriptor == -1) return FALSE;
+        Close(fileDescriptor);
+        return TRUE;
+    }
 
-    OpenFile* Open(char *name) {
-	  int fileDescriptor = OpenForReadWrite(name, FALSE);
+    OpenFile *Open(char *name);
 
-	  if (fileDescriptor == -1) return NULL;
-	  return new OpenFile(fileDescriptor);
-      }
+    int FileTableIndex();
+
+    void Renew(int id) {
+        for (int i = 0; i < FILE_MAX; i++) {
+            fileTable[id]->Remove(i);
+        }
+    }
+
+    int Open(char *name, int openMode) {
+        return fileTable[FileTableIndex()]->Insert(name, openMode);
+    }
+
+    int Close(int id) { return fileTable[FileTableIndex()]->Remove(id); }
+
+    int Read(char *buffer, int charCount, int id) {
+        return fileTable[FileTableIndex()]->Read(buffer, charCount, id);
+    }
+
+    int Write(char *buffer, int charCount, int id) {
+        return fileTable[FileTableIndex()]->Write(buffer, charCount, id);
+    }
+
+    int Seek(int position, int id) {
+        return fileTable[FileTableIndex()]->Seek(position, id);
+    }
 
     bool Remove(char *name) { return Unlink(name) == 0; }
-
 };
 
 #else // FILESYS
@@ -73,7 +111,7 @@ class FileSystem {
 					// the disk, so initialize the directory
     					// and the bitmap of free blocks.
 
-    bool Create(char *name, int initialSize);  	
+    bool Create(char *name, int initialSize = 0);  	
 					// Create a file (UNIX creat)
 
     OpenFile* Open(char *name); 	// Open a file (UNIX open)
