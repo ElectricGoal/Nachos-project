@@ -296,6 +296,36 @@ int SysCreateFile(int virtAddr)
 	delete[] name;
 	return 0;
 }
+/*	Input: 	Address of buffer stores file name in user space
+		
+	Output: 0 if successful, otherwise -1
+	Purpose: Delete a file */
+int SysRemoveFile(int virtAddr)
+{
+  DEBUG (dbgFile,"\n Reading filename."); 
+	char *name = User2System(virtAddr, FILE_MAX_LENGTH + 1);
+	if (strlen(name) == 0)
+	{
+		DEBUG(dbgSys, "Invalid file name!");
+		return -1;
+	}
+	if (name == NULL)
+	{
+		DEBUG(dbgSys, "Invalid file name!");
+		delete[] name;
+		return -1;
+	}
+ 
+	if (!kernel->fileSystem->Remove(name))
+	{
+		DEBUG(dbgSys, "Remove file unsuccessfully!");
+		delete[] name;
+		return -1;
+	}
+	DEBUG(dbgSys, "Remove file successfully!");
+	delete[] name;
+	return 0;
+}
 
 /*	Input: 	Address of buffer stores file name in user space
 			Type 0 for read and write mode, 1 for read only mode

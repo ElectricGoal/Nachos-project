@@ -260,6 +260,18 @@ void ExceptionHandler(ExceptionType which)
 
 			return move_program_counter();
 		}
+		case SC_RemoveFile:
+		{
+			int virtAddr = kernel->machine->ReadRegister(4);
+			int result=SysRemoveFile(virtAddr);
+			DEBUG(dbgSys, "SysRemoveFile returning with " << result << "\n");
+            kernel->machine->WriteRegister(2, (int)result);
+
+            return move_program_counter();
+			return;
+            ASSERTNOTREACHED();
+            break;
+		}
 
 		default:
 			cerr << "Unexpected system call " << type << "\n";

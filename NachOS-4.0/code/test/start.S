@@ -242,6 +242,14 @@ CreateFile:
 	j	$31
 	.end CreateFile
 
+	.globl RemoveFile
+	.ent	RemoveFile
+RemoveFile:
+	addiu $2,$0,SC_RemoveFile
+	syscall
+	j	$31
+	.end RemoveFile
+
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main
