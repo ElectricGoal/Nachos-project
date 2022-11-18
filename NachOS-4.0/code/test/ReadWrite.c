@@ -1,7 +1,7 @@
 #include "syscall.h"
 
 int main(){
-    int fd, type;
+    int fd;
     int len;
     char buffer[100];
 

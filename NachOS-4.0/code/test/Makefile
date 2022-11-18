@@ -112,7 +112,7 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult segments numTest charTest stringTest help sort ascii ping pong pingpong student mainTest copy cat ReadWrite
+PROGRAMS = add halt shell matmult sort segments char_io randomnum num_io stringTest help ascii create_file open_file ReadWrite
 endif
 
 all: $(PROGRAMS)
@@ -132,6 +132,24 @@ add.o: add.c
 add: add.o start.o
 	$(LD) $(LDFLAGS) start.o add.o -o add.coff
 	$(COFF2NOFF) add.coff add
+
+num_io.o: num_io.c
+	$(CC) $(CFLAGS) -c num_io.c
+num_io: num_io.o start.o
+	$(LD) $(LDFLAGS) start.o num_io.o -o num_io.coff
+	$(COFF2NOFF) num_io.coff num_io
+
+char_io.o: char_io.c
+	$(CC) $(CFLAGS) -c char_io.c
+char_io: char_io.o start.o
+	$(LD) $(LDFLAGS) start.o char_io.o -o char_io.coff
+	$(COFF2NOFF) char_io.coff char_io
+
+randomnum.o: randomnum.c
+	$(CC) $(CFLAGS) -c randomnum.c
+randomnum: randomnum.o start.o
+	$(LD) $(LDFLAGS) start.o randomnum.o -o randomnum.coff
+	$(COFF2NOFF) randomnum.coff randomnum
 
 shell.o: shell.c
 	$(CC) $(CFLAGS) -c shell.c
@@ -157,23 +175,23 @@ matmult: matmult.o start.o
 	$(LD) $(LDFLAGS) start.o matmult.o -o matmult.coff
 	$(COFF2NOFF) matmult.coff matmult
 
-numTest.o: numTest.c
-	$(CC) $(CFLAGS) -c numTest.c
-numTest: numTest.o start.o
-	$(LD) $(LDFLAGS) start.o numTest.o -o numTest.coff
-	$(COFF2NOFF) numTest.coff numTest
-
-charTest.o: charTest.c
-	$(CC) $(CFLAGS) -c charTest.c
-charTest: charTest.o start.o
-	$(LD) $(LDFLAGS) start.o charTest.o -o charTest.coff
-	$(COFF2NOFF) charTest.coff charTest
-
 stringTest.o: stringTest.c
 	$(CC) $(CFLAGS) -c stringTest.c
 stringTest: stringTest.o start.o
 	$(LD) $(LDFLAGS) start.o stringTest.o -o stringTest.coff
 	$(COFF2NOFF) stringTest.coff stringTest
+
+create_file.o: create_file.c
+	$(CC) $(CFLAGS) -c create_file.c
+create_file: create_file.o start.o
+	$(LD) $(LDFLAGS) start.o create_file.o -o create_file.coff
+	$(COFF2NOFF) create_file.coff create_file
+
+open_file.o: open_file.c
+	$(CC) $(CFLAGS) -c open_file.c
+open_file: open_file.o start.o
+	$(LD) $(LDFLAGS) start.o open_file.o -o open_file.coff
+	$(COFF2NOFF) open_file.coff open_file
 
 help.o: help.c
 	$(CC) $(CFLAGS) -c help.c
@@ -192,48 +210,6 @@ ReadWrite.o: ReadWrite.c
 ReadWrite: ReadWrite.o start.o
 	$(LD) $(LDFLAGS) start.o ReadWrite.o -o ReadWrite.coff
 	$(COFF2NOFF) ReadWrite.coff ReadWrite
-
-ping.o: ping.c
-	$(CC) $(CFLAGS) -c ping.c
-ping: ping.o start.o
-	$(LD) $(LDFLAGS) start.o ping.o -o ping.coff
-	$(COFF2NOFF) ping.coff ping
-
-pong.o: pong.c
-	$(CC) $(CFLAGS) -c pong.c
-pong: pong.o start.o
-	$(LD) $(LDFLAGS) start.o pong.o -o pong.coff
-	$(COFF2NOFF) pong.coff pong
-
-pingpong.o: pingpong.c
-	$(CC) $(CFLAGS) -c pingpong.c
-pingpong: pingpong.o start.o
-	$(LD) $(LDFLAGS) start.o pingpong.o -o pingpong.coff
-	$(COFF2NOFF) pingpong.coff pingpong
-
-student.o: student.c
-	$(CC) $(CFLAGS) -c student.c
-student: student.o start.o
-	$(LD) $(LDFLAGS) start.o student.o -o student.coff
-	$(COFF2NOFF) student.coff student
-
-mainTest.o: mainTest.c
-	$(CC) $(CFLAGS) -c mainTest.c
-mainTest: mainTest.o start.o
-	$(LD) $(LDFLAGS) start.o mainTest.o -o mainTest.coff
-	$(COFF2NOFF) mainTest.coff mainTest
-
-cat.o: cat.c
-	$(CC) $(CFLAGS) -c cat.c
-cat: cat.o start.o
-	$(LD) $(LDFLAGS) start.o cat.o -o cat.coff
-	$(COFF2NOFF) cat.coff cat
-
-copy.o: copy.c
-	$(CC) $(CFLAGS) -c copy.c
-copy: copy.o start.o
-	$(LD) $(LDFLAGS) start.o copy.o -o copy.coff
-	$(COFF2NOFF) copy.coff copy
 
 clean:
 	$(RM) -f *.o *.ii
