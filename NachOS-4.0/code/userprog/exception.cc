@@ -47,11 +47,6 @@
 //	"which" is the kind of exception.  The list of possible exceptions
 //	is in machine.h.
 //----------------------------------------------------------------------
-
-/**
- * Modify program counter
- * This code is adapted from `../machine/mipssim.cc`, line 667
- **/
 void move_program_counter()
 {
 	/* set previous programm counter (debugging only)
@@ -69,13 +64,12 @@ void move_program_counter()
 
 void ExceptionHandler(ExceptionType which)
 {
-	int type = kernel->machine->ReadRegister(2);
+    int type = kernel->machine->ReadRegister(2);
+    DEBUG(dbgSys, "Received Exception " << which << " type: " << type << "\n");
 
-	DEBUG(dbgSys, "Received Exception " << which << " type: " << type << "\n");
-
-	switch (which)
-	{
-	case NoException: // return control to kernel
+    switch (which)
+    {
+    case NoException: // return control to kernel
 		kernel->interrupt->setStatus(SystemMode);
 		DEBUG(dbgSys, "Switch to system mode\n");
 		break;
@@ -90,36 +84,38 @@ void ExceptionHandler(ExceptionType which)
 		SysHalt();
 		ASSERTNOTREACHED();
 
-	case SyscallException:
-		switch (type)
-		{
-		case SC_Halt:
-			DEBUG(dbgSys, "Shutdown, initiated by user program.\n");
+    case SyscallException:
+        switch (type)
+        {
+        case SC_Halt:
+        {
+            DEBUG(dbgSys, "Shutdown, initiated by user program.\n");
 
-			SysHalt();
+            SysHalt();
 
-			ASSERTNOTREACHED();
-			break;
+            ASSERTNOTREACHED();
+            break;
+        }
+        case SC_Add:
+        {
+            DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + " << kernel->machine->ReadRegister(5) << "\n");
 
-		case SC_Add:
-			DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + " << kernel->machine->ReadRegister(5) << "\n");
+            /* Process SysAdd Systemcall*/
+            int result;
+            result = SysAdd(/* int op1 */ (int)kernel->machine->ReadRegister(4),
+                            /* int op2 */ (int)kernel->machine->ReadRegister(5));
 
-			/* Process SysAdd Systemcall*/
-			int result;
-			result = SysAdd(/* int op1 */ (int)kernel->machine->ReadRegister(4),
-							/* int op2 */ (int)kernel->machine->ReadRegister(5));
+            DEBUG(dbgSys, "Add returning with " << result << "\n");
+            /* Prepare Result */
+            kernel->machine->WriteRegister(2, (int)result);
 
-			DEBUG(dbgSys, "Add returning with " << result << "\n");
-			/* Prepare Result */
-			kernel->machine->WriteRegister(2, (int)result);
+            return move_program_counter();
 
-			return move_program_counter();
-
-			return;
-			ASSERTNOTREACHED();
-			break;
-
-		case SC_ReadNum:
+            return;
+            ASSERTNOTREACHED();
+            break;
+        }
+        case SC_ReadNum:
 			DEBUG(dbgSys, "Read number\n");
 
 			int res;
@@ -179,19 +175,21 @@ void ExceptionHandler(ExceptionType which)
 			int result;
 			result = SysRandomNum();
 
-			DEBUG(dbgSys, "RandomNumber returning with " << result << "\n");
-			kernel->machine->WriteRegister(2, (int)result);
+            DEBUG(dbgSys, "RandomNumber returning with " << result << "\n");
+            /* Prepare Result */
+            kernel->machine->WriteRegister(2, (int)result);
 
-			return move_program_counter();
+            return move_program_counter();
 
-			return;
-			ASSERTNOTREACHED();
-			break;
-		}
-		case SC_ReadString:
+            return;
+            ASSERTNOTREACHED();
+            break;
+        }
+
+        case SC_ReadString:
         {
             DEBUG(dbgSys, "Read string\n");
-            SysReadString((char *) kernel->machine->ReadRegister(4), (int) kernel->machine->ReadRegister(5));
+            SysReadString((char *)kernel->machine->ReadRegister(4), (int)kernel->machine->ReadRegister(5));
 
             /* Modify return point */
             {
@@ -211,6 +209,7 @@ void ExceptionHandler(ExceptionType which)
         }
 
         case SC_PrintString:
+        {
             DEBUG(dbgSys, "PrintString " << kernel->machine->ReadRegister(4) << "\n");
             SysPrintString((int)kernel->machine->ReadRegister(4));
 
@@ -231,34 +230,30 @@ void ExceptionHandler(ExceptionType which)
             ASSERTNOTREACHED();
 
             break;
-
-		case SC_CreateFile:
+        }
+        case SC_CreateFile:
+        {
             DEBUG(dbgSys, "Create file\n");
-            result = SysCreateFile((int)kernel->machine->ReadRegister(4));
-            
+            int result = SysCreateFile((int)kernel->machine->ReadRegister(4));
+
             DEBUG(dbgSys, "SysCreateFile returning with " << result << "\n");
             kernel->machine->WriteRegister(2, (int)result);
 
             return move_program_counter();
-			return;
+
+            return;
             ASSERTNOTREACHED();
             break;
-
-		case SC_Open:
-		{
-			int virtAddr = kernel->machine->ReadRegister(4);
-			int type = kernel->machine->ReadRegister(5);
+        }
+        case SC_Open:
+        {
+            int virtAddr = kernel->machine->ReadRegister(4);
+            int type = kernel->machine->ReadRegister(5);
 
             kernel->machine->WriteRegister(2, SysOpen(virtAddr, type));
 
             return move_program_counter();
-		}
-		case SC_Close:
-		{
-			int id = kernel->machine->ReadRegister(4);
-			kernel->machine->WriteRegister(2, SysClose(id));
 
-			return move_program_counter();
 		}
 		case SC_RemoveFile:
 		{
@@ -273,14 +268,81 @@ void ExceptionHandler(ExceptionType which)
             break;
 		}
 
-		default:
-			cerr << "Unexpected system call " << type << "\n";
-			break;
-		}
-		break;
-	default:
-		cerr << "Unexpected user mode exception" << (int)which << "\n";
-		break;
-	}
-	ASSERTNOTREACHED();
+        case SC_Close:
+        {
+            int id = kernel->machine->ReadRegister(4);
+            kernel->machine->WriteRegister(2, SysClose(id));
+
+           return move_program_counter();
+
+            return;
+            ASSERTNOTREACHED();
+            break;
+        }
+
+        case SC_Read:
+        {
+            DEBUG(dbgSys, "Read file\n");
+            int result;
+            result = SysRead((int)kernel->machine->ReadRegister(4), (int)kernel->machine->ReadRegister(5), (int)kernel->machine->ReadRegister(6));
+
+            DEBUG(dbgSys, "Read file returning with " << result << "\n");
+            /* Prepare Result */
+            kernel->machine->WriteRegister(2, (int)result);
+
+            /* Modify return point */
+            {
+                /* set previous programm counter (debugging only)*/
+                kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
+
+                /* set programm counter to next instruction (all Instructions are 4 byte wide)*/
+                kernel->machine->WriteRegister(PCReg, kernel->machine->ReadRegister(PCReg) + 4);
+
+                /* set next programm counter for brach execution */
+                kernel->machine->WriteRegister(NextPCReg, kernel->machine->ReadRegister(PCReg) + 4);
+            }
+
+            return;
+            ASSERTNOTREACHED();
+            break;
+        }
+
+        case SC_Write:
+        {
+            DEBUG(dbgSys, "Write file\n");
+            int result;
+            result = SysWrite((int)kernel->machine->ReadRegister(4), (int)kernel->machine->ReadRegister(5), (int)kernel->machine->ReadRegister(6));
+
+            DEBUG(dbgSys, "Write file returning with " << result << "\n");
+            /* Prepare Result */
+            kernel->machine->WriteRegister(2, (int)result);
+
+            /* Modify return point */
+            {
+                /* set previous programm counter (debugging only)*/
+                kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
+
+                /* set programm counter to next instruction (all Instructions are 4 byte wide)*/
+                kernel->machine->WriteRegister(PCReg, kernel->machine->ReadRegister(PCReg) + 4);
+
+                /* set next programm counter for brach execution */
+                kernel->machine->WriteRegister(NextPCReg, kernel->machine->ReadRegister(PCReg) + 4);
+            }
+
+            return;
+            ASSERTNOTREACHED();
+            break;
+        }
+
+        default:
+            cerr << "Unexpected system call " << type << "\n";
+            break;
+        }
+        break;
+
+    default:
+        cerr << "Unexpected user mode exception" << (int)which << "\n";
+        break;
+    }
+    ASSERTNOTREACHED();
 }
