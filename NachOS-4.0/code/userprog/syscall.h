@@ -27,7 +27,7 @@
 #define SC_Open		6
 #define SC_Read		7
 #define SC_Write	8
-#define SC_Seek         9
+#define SC_Seek		9
 #define SC_Close	10
 #define SC_ThreadFork	11
 #define SC_ThreadYield	12
@@ -35,13 +35,12 @@
 #define SC_ThreadExit   14
 #define SC_ThreadJoin   15
 
-#define SC_Add		42
-
+#define SC_Add		   42
 #define SC_ReadNum     43
-#define SC_PrintNum		44
+#define SC_PrintNum    44
 #define SC_ReadChar    45
-#define SC_PrintChar    46
-#define SC_RandomNum    47
+#define SC_PrintChar   46
+#define SC_RandomNum   47
 #define SC_ReadString  48
 #define SC_PrintString 49
 
@@ -75,13 +74,13 @@ int ReadNum();
 // Print a number to console
 void PrintNum(int number);
 
-/* Read a character from console */
+// Read a character from console
 char ReadChar();
 
-/* Print a character to console */
+// Output a character on console
 void PrintChar(char character);
 
-/* Random a number */
+// Create random number
 int RandomNum();
 
 // Read a string from console
@@ -205,7 +204,8 @@ int ThreadJoin(ThreadId id);
 /*
  * Deletes current thread and returns ExitCode to every waiting lokal thread.
  */
-void ThreadExit(int ExitCode);	
+
+
 
 #endif /* IN_ASM */
 
