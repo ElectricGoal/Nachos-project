@@ -112,7 +112,7 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult sort segments char_io randomnum num_io stringTest help ascii create_file open_file
+PROGRAMS = add halt shell matmult sort segments char_io randomnum num_io stringTest help ascii create_file open_file ReadWrite
 endif
 
 all: $(PROGRAMS)
@@ -128,6 +128,7 @@ halt: halt.o start.o
 
 add.o: add.c
 	$(CC) $(CFLAGS) -c add.c
+
 add: add.o start.o
 	$(LD) $(LDFLAGS) start.o add.o -o add.coff
 	$(COFF2NOFF) add.coff add
@@ -180,6 +181,18 @@ stringTest: stringTest.o start.o
 	$(LD) $(LDFLAGS) start.o stringTest.o -o stringTest.coff
 	$(COFF2NOFF) stringTest.coff stringTest
 
+create_file.o: create_file.c
+	$(CC) $(CFLAGS) -c create_file.c
+create_file: create_file.o start.o
+	$(LD) $(LDFLAGS) start.o create_file.o -o create_file.coff
+	$(COFF2NOFF) create_file.coff create_file
+
+open_file.o: open_file.c
+	$(CC) $(CFLAGS) -c open_file.c
+open_file: open_file.o start.o
+	$(LD) $(LDFLAGS) start.o open_file.o -o open_file.coff
+	$(COFF2NOFF) open_file.coff open_file
+
 help.o: help.c
 	$(CC) $(CFLAGS) -c help.c
 help: help.o start.o
@@ -192,17 +205,11 @@ ascii: ascii.o start.o
 	$(LD) $(LDFLAGS) start.o ascii.o -o ascii.coff
 	$(COFF2NOFF) ascii.coff ascii
 
-create_file.o: create_file.c
-	$(CC) $(CFLAGS) -c create_file.c
-create_file: create_file.o start.o
-	$(LD) $(LDFLAGS) start.o create_file.o -o create_file.coff
-	$(COFF2NOFF) create_file.coff create_file
-
-open_file.o: open_file.c
-	$(CC) $(CFLAGS) -c open_file.c
-open_file: open_file.o start.o
-	$(LD) $(LDFLAGS) start.o open_file.o -o open_file.coff
-	$(COFF2NOFF) open_file.coff open_file
+ReadWrite.o: ReadWrite.c
+	$(CC) $(CFLAGS) -c ReadWrite.c
+ReadWrite: ReadWrite.o start.o
+	$(LD) $(LDFLAGS) start.o ReadWrite.o -o ReadWrite.coff
+	$(COFF2NOFF) ReadWrite.coff ReadWrite
 
 clean:
 	$(RM) -f *.o *.ii
