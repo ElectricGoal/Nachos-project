@@ -52,27 +52,31 @@ int main() {
     PrintString(buffer);
     PrintString("\n");
     Close(fileId1);
+    char buffer1[100]=buffer;
 
     PrintString("Open second file \n");
     fileId2 = Open(fileName2, MODE_READWRITE);
     read2 = Read(buffer, 50, stdin);
     len2 = 0;
     while (buffer[len2] != '\0') ++len2;
-    Write(buffer, len2, stdout);
-    PrintString("\n");
-
-
-    write = Write(buffer, len2, fileId2);
-
-    PrintString("Write ");
-    PrintNum(write);
+    PrintString("Read ");
+    PrintNum(len2);
     PrintString(" characters: ");
     PrintString(buffer);
     PrintString("\n");
     Close(fileId2);
 
-    PrintString("Enter a string:\n");
-        PrintString("You have entered: ");
+
+    //write = Write(buffer, len2, fileId2);
+
+    //PrintString("Write ");
+    //PrintNum(write);
+    //PrintString(" characters: ");
+    //PrintString(buffer);
+    //PrintString("\n");
+    //Write(buffer, len2, stdout);
+    //PrintString("Enter a string:\n");
+        //PrintString("You have entered: ");
     
 
     Halt();
