@@ -178,6 +178,8 @@ ThreadJoin:
 	j 	$31
 	.end ThreadJoin
 
+
+
 	.globl  ReadNum
 	.ent	ReadNum
 ReadNum:
@@ -194,28 +196,28 @@ PrintNum:
 	j	$31
 	.end PrintNum
 
-	.globl ReadChar
+	.globl  ReadChar
 	.ent	ReadChar
 ReadChar:
-	addiu $2, $0, SC_ReadChar
+	addiu $2,$0,SC_ReadChar
 	syscall
 	j 	$31
-	.end ReadChar
-
+	.end ReadChar	
+	
 	.globl PrintChar
 	.ent	PrintChar
 PrintChar:
-	addiu $2, $0, SC_PrintChar
+	addiu $2,$0,SC_PrintChar
 	syscall
-	j 	$31
+	j	$31
 	.end PrintChar
 	
 	.globl RandomNum
 	.ent	RandomNum
 RandomNum:
-	addiu $2, $0, SC_RandomNum
+	addiu $2,$0,SC_RandomNum
 	syscall
-	j 	$31
+	j	$31
 	.end RandomNum
 
 	.globl ReadString
@@ -242,6 +244,39 @@ CreateFile:
 	j	$31
 	.end CreateFile
 
+
+	.globl GetCurrentProcessId
+	.ent	GetCurrentProcessId
+GetCurrentProcessId:
+	addiu $2,$0,SC_GetCurrentProcessId
+	syscall
+	j	$31
+	.end GetCurrentProcessId
+	
+	.globl CreateSemaphore
+	.ent	CreateSemaphore
+CreateSemaphore:
+	addiu $2,$0,SC_CreateSemaphore
+	syscall
+	j	$31
+	.end CreateSemaphore
+
+	.globl Signal
+	.ent	Signal
+Signal:
+	addiu $2,$0,SC_Signal
+	syscall
+	j	$31
+	.end Signal
+
+	.globl Wait
+	.ent	Wait
+Wait:
+	addiu $2,$0,SC_Wait
+	syscall
+	j	$31
+	.end Wait
+		
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main
