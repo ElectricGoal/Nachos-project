@@ -341,7 +341,7 @@ int SysRead(int virAddr, int charCount, int fileId) {
 	if (fileId == 0)
 		return kernel->synchConsoleIn->GetString(buffer, charCount);
 	int id = kernel->fileSystem->Read(buffer, charCount, fileId);
-	System2User(virAddr, charCount, fileId);
+	System2User(virAddr, charCount, buffer);
 	delete[] buffer;
 	return id;
 }
@@ -351,17 +351,9 @@ int SysWrite(int virAddr, int charCount, int fileId) {
 	if (fileId == 1)
 		return kernel->synchConsoleOut->PutString(buffer, charCount);
 	int id = kernel->fileSystem->Write(buffer, charCount, fileId);
-	System2User(virAddr, charCount, fileId);
+	System2User(virAddr, charCount, buffer);
 	delete[] buffer;
 	return id;
-}
-
-int SysSeek(int seekPos, int fileId) {
-    if (fileId <= 1) {
-        DEBUG(dbgSys, "\nCan't seek in console");
-        return -1;
-    }
-    return kernel->fileSystem->Seek(seekPos, fileId);
 }
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */
