@@ -197,7 +197,7 @@ void SysPrintChar(char c)
     Purpose: Create random int value */
 int SysRandomNum()
 {
-	RandomInit((unsigned int)time(NULL));
+	RandomInit((int)time(NULL));
 	return RandomNumber();
 }
 
@@ -407,97 +407,6 @@ int SysWrite(int virAddr, int charcount, int id)
 	int count = fwrite(string, 1, charcount, curr->fileTable[id]);
 	delete[] string;
 	return count;
-}
-
-int SysSeek(int seekPos, int fileId) {
-    if (fileId <= 1) {
-        DEBUG(dbgSys, "\nCan't seek in console");
-        return -1;
-    }
-    return kernel->fileSystem->Seek(seekPos, fileId);
-}
-
-/*	Input: 	Address store program's name in user mode
-	Output: Program's ID or -1 if unsuccessful
-	Purpose: Execute a program in a new thread */
-int SysExec(int virAddr)
-{
-	char *fileName = User2System(virAddr, BUFFER_MAX_LENGTH);
-	if (fileName == NULL)
-	{
-		return -1;
-	}
-
-	int pid = kernel->pTab->ExecUpdate(fileName);
-	return pid;
-}
-
-/*	Input: 	ID of program 
-	Output: exitcode = 0 if successul, otherwise -1 or error code
-	Purpose: Wait and block a process */
-int SysJoin(int id)
-{
-	return kernel->pTab->JoinUpdate(id);
-}
-
-/*	Input: 	Exitcode of joined program
-	Output: None
-	Purpose: Exit the joined process */
-void SysExit(int ec)
-{
-	ec = kernel->pTab->ExitUpdate(ec);
-	kernel->currentThread->FreeSpace();
-	kernel->currentThread->Finish();
-}
-
-/*	Input: 	Address store semaphore's name in user mode
-			Value of semaphore
-	Output: 0 if successful, otherwise -1
-	Purpose: create a semaphore */
-int SysCreateSemaphore(int virtAddr, int semval)
-{
-	char *name = User2System(virtAddr, BUFFER_MAX_LENGTH);
-	if (name == NULL || strlen(name) == 0)
-	{
-		return -1;
-	}
-
-	return kernel->semTab->Create(name, semval);
-}
-
-/*	Input: 	Address store semaphore's name in user mode
-	Output: 0 if successful, otherwise -1
-	Purpose: Release the waiting process */
-int SysSignal(int virtAddr)
-{
-	char *name = User2System(virtAddr, BUFFER_MAX_LENGTH);
-	if (name == NULL || strlen(name) == 0)
-	{
-		return -1;
-	}
-
-	return kernel->semTab->Signal(name);
-}
-
-/*	Input: 	Address store semaphore's name in user mode
-	Output: 0 if successful, otherwise -1
-	Purpose: Wait a process */
-int SysWait(int virtAddr)
-{
-	char *name = User2System(virtAddr, BUFFER_MAX_LENGTH);
-	if (name == NULL || strlen(name) == 0)
-	{
-		return -1;
-	}
-
-	return kernel->semTab->Wait(name);
-}
-
-/*	Input: 	None
-	Output: ID of the current process
-	Purpose: Get ID of the current process */
-int SysGetCurrentProcessId(){
-	return kernel->currentThread->processID;
 }
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */

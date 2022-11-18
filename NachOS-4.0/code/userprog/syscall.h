@@ -46,12 +46,6 @@
 
 #define SC_CreateFile 50
 
-#define SC_CreateSemaphore 51
-#define SC_Signal            52
-#define SC_Wait          53
-
-#define SC_GetCurrentProcessId 60
-
 #ifndef IN_ASM
 
 /* The system call interface.  These are the operations the Nachos
@@ -149,6 +143,8 @@ typedef int OpenFileId;
 /* Return 1 on success, negative error code on failure */
 int Create(char *name);
 
+int CreateFile(char *name);
+
 /* Remove a Nachos file, with name "name" */
 int Remove(char *name);
 
@@ -208,15 +204,8 @@ int ThreadJoin(ThreadId id);
 /*
  * Deletes current thread and returns ExitCode to every waiting lokal thread.
  */
-void ThreadExit(int ExitCode);	
 
-int CreateFile(char *name);
 
-int CreateSemaphore(char* name, int semval);
-int Signal(char* name);
-int Wait(char* name);
-
-int GetCurrentProcessId();
 
 #endif /* IN_ASM */
 
