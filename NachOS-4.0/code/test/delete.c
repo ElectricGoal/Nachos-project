@@ -9,6 +9,7 @@ int main() {
     // length = ReadNum();
     PrintString("Enter file's name: ");
     ReadString(fileName, MAX_LENGTH);
+
     if (RemoveFile(fileName) == 0) {
         PrintString("File ");
         PrintString(fileName);
