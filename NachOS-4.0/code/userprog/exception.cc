@@ -284,7 +284,7 @@ void ExceptionHandler(ExceptionType which)
         {
             DEBUG(dbgSys, "Read file\n");
             int result;
-            result = SysRead((char*)kernel->machine->ReadRegister(4), (int)kernel->machine->ReadRegister(5), (int)kernel->machine->ReadRegister(6));
+            result = SysRead(kernel->machine->ReadRegister(4), (int)kernel->machine->ReadRegister(5), (int)kernel->machine->ReadRegister(6));
 
             DEBUG(dbgSys, "Read file returning with " << result << "\n");
             /* Prepare Result */
@@ -311,7 +311,7 @@ void ExceptionHandler(ExceptionType which)
         {
             DEBUG(dbgSys, "Write file\n");
             int result;
-            result = SysWrite((char*)kernel->machine->ReadRegister(4), (int)kernel->machine->ReadRegister(5), (int)kernel->machine->ReadRegister(6));
+            result = SysWrite(kernel->machine->ReadRegister(4), (int)kernel->machine->ReadRegister(5), (int)kernel->machine->ReadRegister(6));
 
             DEBUG(dbgSys, "Write file returning with " << result << "\n");
             /* Prepare Result */
@@ -333,7 +333,6 @@ void ExceptionHandler(ExceptionType which)
             ASSERTNOTREACHED();
             break;
         }
-        
 
         default:
             cerr << "Unexpected system call " << type << "\n";
