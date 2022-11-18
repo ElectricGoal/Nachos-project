@@ -336,18 +336,24 @@ int SysClose(int id)
 	return kernel->fileSystem->Close(id); 
 }
 
-int SysRead(char* buffer, int charCount, int fileId) {
-    if (fileId == 0) {
-        return kernel->synchConsoleIn->GetString(buffer, charCount);
-    }
-    return kernel->fileSystem->Read(buffer, charCount, fileId);
+int SysRead(int virAddr, int charCount, int fileId) {
+    char* buffer = User2System(virAddr, charCount);
+	if (fileId == 0)
+		return kernel->synchConsoleIn->GetString(buffer, charCount);
+	int id = kernel->fileSystem->Read(buffer, charCount, fileId);
+	System2User(virAddr, charCount, fileId);
+	delete[] buffer;
+	return id;
 }
 
-int SysWrite(char* buffer, int charCount, int fileId) {
-    if (fileId == 1) {
-        return kernel->synchConsoleOut->PutString(buffer, charCount);
-    }
-    return kernel->fileSystem->Write(buffer, charCount, fileId);
+int SysWrite(int virAddr, int charCount, int fileId) {
+    char* buffer = User2System(virAddr, charCount);
+	if (fileId == 1)
+		return kernel->synchConsoleOut->PutString(buffer, charCount);
+	int id = kernel->fileSystem->Write(buffer, charCount, fileId);
+	System2User(virAddr, charCount, fileId);
+	delete[] buffer;
+	return id;
 }
 
 int SysSeek(int seekPos, int fileId) {
