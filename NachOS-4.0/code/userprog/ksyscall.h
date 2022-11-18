@@ -14,7 +14,6 @@
 #include "kernel.h"
 #include "synchconsole.h"
 #include "filesys.h"
-#include "PCB.h"
 
 #define BUFFER_MAX_LENGTH 255
 #define FILE_MAX_LENGTH 32
@@ -367,76 +366,20 @@ int SysClose(int id)
 	return kernel->fileSystem->Close(id); 
 }
 
-/*	Input: 	Address store the buffer in user mode
-			Maximum number of characters read
-			ID of file read
-	Output: Actual number of characters read
-	Purpose: Read from a file or console */
-int SysRead(int virAddr, int charcount, int id)
-{
-	if (id == 0)
-		return SysReadString((char *)virAddr, charcount);
-		
-	if (charcount < 0 || id <= 1 || id >= MAX_FILE)
-		return -1;
-
-	PCB *curr = kernel->pTab->getCurrentPCB();
-	if (!curr->filemap->Test(id))
-	{
-		DEBUG(dbgSys, "File descriptor does not exist!");
-		return -1;
-	}
-
-	char *buffer = new char[charcount + 1];
-	if (buffer == NULL)
-	{
-		DEBUG(dbgSys, "Not enough system memory!");
-		return -1;
-	}
-
-	int count = fread(buffer, 1, charcount, curr->fileTable[id]);
-	if (count == 0)
-	{
-		DEBUG(dbgSys, "End of file!");
-		delete[] buffer;
-		return -2;
-	}
-
-	System2User((int)virAddr, count, buffer);
-	delete[] buffer;
-	return count;
+int SysRead(char* buffer, int charCount, int fileId) {
+    if (fileId == 0) {
+        return kernel->synchConsoleIn->GetString(buffer, charCount);
+    }
+    return kernel->fileSystem->Read(buffer, charCount, fileId);
 }
 
-/*	Input: 	Address store the buffer in user mode
-			Maximum number of characters written
-			ID of file read
-	Output: Actual number of characters written
-	Purpose: Write to a file or console */
-int SysWrite(int virAddr, int charcount, int id)
-{
-	if (id == 1)
-		return SysPrintString(virAddr);
-
-	if (charcount < 0 || id <= 1 || id >= MAX_FILE)
-		return -1;
-
-	PCB *curr = kernel->pTab->getCurrentPCB();
-	if (!curr->filemap->Test(id))
-	{
-		DEBUG(dbgSys, "File descriptor does not exist!");
-		return -1;
-	}
-
-	char *string = User2System(virAddr, charcount);
-	if (string == NULL)
-	{
-		DEBUG(dbgSys, "Not enough system memory!");
-		return -1;
-	}
-
-	int count = fwrite(string, 1, charcount, curr->fileTable[id]);
-	delete[] string;
-	return count;
+int SysWrite(char* buffer, int charCount, int fileId) {
+    if (fileId == 1) {
+        return kernel->synchConsoleOut->PutString(buffer, charCount);
+    }
+    return kernel->fileSystem->Write(buffer, charCount, fileId);
 }
+
+
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */
