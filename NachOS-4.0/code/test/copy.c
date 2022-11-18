@@ -3,21 +3,28 @@
 #define MODE_READWRITE 0
 #define MODE_READ 1
 
-#define stdin 0
-#define stdout 1
+#define MAX_LENGTH 32
 
 int main() {
-    
-    int i;
-    int write;
     char buffer[100];
-    int fileid;
+    int i;
     int read;
-    int len = 0;
+    int write;
+    int fileid;
+    int len;
 
-    PrintString("Open file text1.txt \n");
-    fileid = Open("test1.txt", MODE_READ);
+    char fileRead[MAX_LENGTH];
+    char fileWrite[MAX_LENGTH];
+
+    PrintString("Nhap vao ten file nguon: ");
+	ReadString(fileRead, MAX_LENGTH);
+
+    PrintString("Nhap vao ten file dich: ");
+	ReadString(fileWrite, MAX_LENGTH);
+
+    fileid = Open(fileRead, 1);
     read = Read(buffer, 50, fileid);
+    len = 0;
     while (buffer[len] != '\0') ++len;
     PrintString("Read ");
     PrintNum(len);
@@ -26,8 +33,7 @@ int main() {
     PrintString("\n");
     Close(fileid);
 
-    PrintString("Open file test2.txt \n");
-    fileid = Open("test2.txt", MODE_READWRITE);
+    fileid = Open(fileWrite, 0);
     write = Write(buffer, len, fileid);
 
     PrintString("Write ");
@@ -36,15 +42,6 @@ int main() {
     PrintString(buffer);
     PrintString("\n");
     Close(fileid);
-
-    PrintString("Enter a string:\n");
-    
-    Read(buffer, 50, stdin);
-    len = 0;
-    while (buffer[len] != '\0') ++len;
-    PrintString("You have entered: ");
-    Write(buffer, len, stdout);
-    PrintString("\n");
 
     Halt();
 }
