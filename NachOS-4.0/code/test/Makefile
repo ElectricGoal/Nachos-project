@@ -128,7 +128,6 @@ halt: halt.o start.o
 
 add.o: add.c
 	$(CC) $(CFLAGS) -c add.c
-
 add: add.o start.o
 	$(LD) $(LDFLAGS) start.o add.o -o add.coff
 	$(COFF2NOFF) add.coff add
@@ -233,6 +232,7 @@ ReadWrite.o: ReadWrite.c
 ReadWrite: ReadWrite.o start.o
 	$(LD) $(LDFLAGS) start.o ReadWrite.o -o ReadWrite.coff
 	$(COFF2NOFF) ReadWrite.coff ReadWrite
+
 cat.o: cat.c
 	$(CC) $(CFLAGS) -c cat.c
 cat: cat.o start.o
