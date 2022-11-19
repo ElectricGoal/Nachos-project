@@ -20,63 +20,76 @@ char *strcat(char *s1, const char *s2) {
 }
 
 int main() {
-    int i;
     int write;
-    char buffer[100];
-    //int fileid;
+    char buffer1[100];
+    char buffer2[100];
+    char* buffer;
+    int fileid;
+    int fileid1;
+    int fileid2;
     int read1;
     int read2;
+    int len = 0;
     int len1 = 0;
     int len2 = 0;
     char fileName1[MAX_LENGTH];
     char fileName2[MAX_LENGTH];
-    int fileId1;
-    int fileId2;
-    // int length;
+    char fileName3[MAX_LENGTH];
 
-    // PrintString("Enter file's name's length: ");
-    // length = ReadNum();
     PrintString("Enter first file's name: ");
     ReadString(fileName1, MAX_LENGTH);
-
-    PrintString("Enter second file's name: ");
-    ReadString(fileName2, MAX_LENGTH);
-    
     PrintString("Open first file \n");
-    fileId1 = Open(fileName1, MODE_READ);
-    read1 = Read(buffer, 50, fileId1);
-    while (buffer[len1] != '\0') ++len1;
+    fileid1 = Open(fileName1, MODE_READ);
+    read1 = Read(buffer1, 50, fileid1);
+    while (buffer1[len1] != '\0') ++len1;
     PrintString("Read ");
     PrintNum(len1);
     PrintString(" characters: ");
-    PrintString(buffer);
+    PrintString(buffer1);
     PrintString("\n");
-    Close(fileId1);
-    char buffer1[100]=buffer;
+    Close(fileid1);
 
+    PrintString("Enter second file's name: ");
+    ReadString(fileName2, MAX_LENGTH);
     PrintString("Open second file \n");
-    fileId2 = Open(fileName2, MODE_READWRITE);
-    read2 = Read(buffer, 50, stdin);
-    len2 = 0;
-    while (buffer[len2] != '\0') ++len2;
+    fileid2 = Open(fileName2, MODE_READ);
+    read2 = Read(buffer2, 50, fileid2);
+    while (buffer2[len2] != '\0') ++len2;
     PrintString("Read ");
     PrintNum(len2);
     PrintString(" characters: ");
+    PrintString(buffer2);
+    PrintString("\n");
+    Close(fileid2);
+
+    PrintString("Enter result concatenate file's name: ");
+    ReadString(fileName3, MAX_LENGTH);
+    if (CreateFile(fileName3) == 0) {
+        PrintString(fileName3);
+        PrintString(" created successfully!\n");
+    } else 
+    {
+      PrintString("Failed to create ");
+      PrintString(fileName3);
+      PrintString("\n");
+    } 
+    
+
+    
+    
+    
+    len=len1+len2;
+    buffer=strcat(buffer1,buffer2);
+    fileid = Open(fileName3, 0);
+    write = Write(buffer, len, fileid);
+    PrintString("Write to ");
+    PrintNum(write);
+    PrintString(" characters to ");
+    PrintString(fileName3);
+    PrintString(" : ");
     PrintString(buffer);
     PrintString("\n");
-    Close(fileId2);
-
-
-    //write = Write(buffer, len2, fileId2);
-
-    //PrintString("Write ");
-    //PrintNum(write);
-    //PrintString(" characters: ");
-    //PrintString(buffer);
-    //PrintString("\n");
-    //Write(buffer, len2, stdout);
-    //PrintString("Enter a string:\n");
-        //PrintString("You have entered: ");
+    Close(fileid);
     
 
     Halt();
