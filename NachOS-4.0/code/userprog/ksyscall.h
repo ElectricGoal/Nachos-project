@@ -341,7 +341,7 @@ int SysRead(int virAddr, int charCount, int fileId) {
 	if (fileId == 0)
 		return kernel->synchConsoleIn->GetString(buffer, charCount);
 	int id = kernel->fileSystem->Read(buffer, charCount, fileId);
-	System2User(virAddr, charCount, fileId);
+	System2User(virAddr, charCount, buffer);
 	delete[] buffer;
 	return id;
 }
@@ -351,7 +351,7 @@ int SysWrite(int virAddr, int charCount, int fileId) {
 	if (fileId == 1)
 		return kernel->synchConsoleOut->PutString(buffer, charCount);
 	int id = kernel->fileSystem->Write(buffer, charCount, fileId);
-	System2User(virAddr, charCount, fileId);
+	System2User(virAddr, charCount, buffer);
 	delete[] buffer;
 	return id;
 }

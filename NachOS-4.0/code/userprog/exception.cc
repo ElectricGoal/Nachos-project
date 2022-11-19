@@ -323,7 +323,6 @@ void ExceptionHandler(ExceptionType which)
             ASSERTNOTREACHED();
             break;
         }
-        
         case SC_Seek:
         {
             DEBUG(dbgSys, "Seek file\n");
@@ -350,7 +349,6 @@ void ExceptionHandler(ExceptionType which)
             ASSERTNOTREACHED();
             break;
         }
-
         default:
             cerr << "Unexpected system call " << type << "\n";
             break;
