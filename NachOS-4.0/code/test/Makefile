@@ -112,7 +112,7 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult sort segments char_io randomnum num_io stringTest help ascii create_file open_file ReadWrite cat copy
+PROGRAMS = add halt shell matmult sort segments char_io randomnum num_io stringTest help ascii create_file open_file delete ReadWrite concatenate cat copy
 endif
 
 all: $(PROGRAMS)
@@ -204,6 +204,29 @@ ascii: ascii.o start.o
 	$(LD) $(LDFLAGS) start.o ascii.o -o ascii.coff
 	$(COFF2NOFF) ascii.coff ascii
 
+create_file.o: create_file.c
+	$(CC) $(CFLAGS) -c create_file.c
+create_file: create_file.o start.o
+	$(LD) $(LDFLAGS) start.o create_file.o -o create_file.coff
+	$(COFF2NOFF) create_file.coff create_file
+
+delete.o: delete.c
+	$(CC) $(CFLAGS) -c delete.c
+delete: delete.o start.o
+	$(LD) $(LDFLAGS) start.o delete.o -o delete.coff
+	$(COFF2NOFF) delete.coff delete
+
+concatenate.o: concatenate.c
+	$(CC) $(CFLAGS) -c concatenate.c
+concatenate: concatenate.o start.o
+	$(LD) $(LDFLAGS) start.o concatenate.o -o concatenate.coff
+	$(COFF2NOFF) concatenate.coff concatenate
+
+open_file.o: open_file.c
+	$(CC) $(CFLAGS) -c open_file.c
+open_file: open_file.o start.o
+	$(LD) $(LDFLAGS) start.o open_file.o -o open_file.coff
+	$(COFF2NOFF) open_file.coff open_file
 ReadWrite.o: ReadWrite.c
 	$(CC) $(CFLAGS) -c ReadWrite.c
 ReadWrite: ReadWrite.o start.o
